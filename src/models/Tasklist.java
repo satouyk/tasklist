@@ -26,8 +26,8 @@ public class Tasklist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "content", length = 255, nullable = false)
-    private String content;
+    @Column(name = "title", length = 255, nullable = false)
+    private String title;
 
     @Column(name = "created_at", nullable = false)
     private Timestamp created_at;
@@ -43,12 +43,12 @@ public class Tasklist {
         this.id = id;
     }
 
-    public String getContent() {
-        return content;
+    public String getTitle() {
+        return title;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setTitle(String title) {
+       this.title = title;
     }
 
     public Timestamp getCreated_at() {

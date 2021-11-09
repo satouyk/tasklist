@@ -1,7 +1,6 @@
 package controllers;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.servlet.RequestDispatcher;
@@ -15,18 +14,18 @@ import models.Tasklist;
 import utils.DBUtil;
 
 /**
- * Servlet implementation class IndexServlet
+ * Servlet implementation class EditServlet
  */
-@WebServlet("/index")
-public class IndexServlet extends HttpServlet {
+@WebServlet("/edit")
+public class EditServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public IndexServlet() {
+    public EditServlet() {
         super();
-        // TODO Auto-generated constructor stub
+
     }
 
     /**
@@ -35,19 +34,22 @@ public class IndexServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         EntityManager em = DBUtil.createEntityManager();
 
-        List<Tasklist> Tasklist = em.createNamedQuery("getAllMessages", Tasklist.class).getResultList();
+        // 該当のIDのメッセージ1件のみをデータベースから取得
+        Tasklist m = em.find(Tasklist.class, Integer.parseInt(request.getParameter("id")));
 
         em.close();
 
-        request.setAttribute("tasklist", Tasklist);
+        // メッセージ情報とセッションIDをリクエストスコープに登録
+        request.setAttribute("message", m);
+        request.setAttribute("_token", request.getSession().getId());
 
-     // フラッシュメッセージがセッションスコープにセットされていたら
-        // リクエストスコープに保存する（セッションスコープからは削除）
-        if(request.getSession().getAttribute("flush") != null) {
-            request.setAttribute("flush", request.getSession().getAttribute("flush"));
-            request.getSession().removeAttribute("flush");
+        // メッセージデータが存在しているときのみ
+        // メッセージIDをセッションスコープに登録
+        if(m != null) {
+        request.getSession().setAttribute("message_id", m.getId());
         }
-        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasklist/index.jsp");
+
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasklist/edit.jsp");
         rd.forward(request, response);
     }
 }
